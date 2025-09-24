@@ -54,18 +54,33 @@ pipeline {
                         echo All repository files found, starting deployment...
                         echo Deploying service to AWS instance...
                         npx e2e-bridge-cli deploy repository/BuilderUML/regtestlatest.rep -h ${params.BRIDGE_HOST} -u ${params.BRIDGE_USER} -P ${params.BRIDGE_PASSWORD} -o overwrite
-                        
-                        echo Deployment completed, now checking service status...
+                        if errorlevel 1 (
+                            echo ERROR: Deployment failed with exit code %errorlevel%
+                            exit /b 1
+                        )
+                        echo Deployment completed successfully, now checking service status...
                         echo DEBUG: About to check service status
                         npx e2e-bridge-cli status regtestlatest -h ${params.BRIDGE_HOST} -u ${params.BRIDGE_USER} -P ${params.BRIDGE_PASSWORD}
+                        if errorlevel 1 (
+                            echo ERROR: Service status check failed with exit code %errorlevel%
+                            exit /b 1
+                        )
                         echo DEBUG: Service status check completed
                         
                         echo Starting the service...
                         npx e2e-bridge-cli start regtestlatest -h ${params.BRIDGE_HOST} -u ${params.BRIDGE_USER} -P ${params.BRIDGE_PASSWORD}
+                        if errorlevel 1 (
+                            echo ERROR: Service start failed with exit code %errorlevel%
+                            exit /b 1
+                        )
                         echo DEBUG: Service start command completed
                         
                         echo Verifying service is running...
                         npx e2e-bridge-cli status regtestlatest -h ${params.BRIDGE_HOST} -u ${params.BRIDGE_USER} -P ${params.BRIDGE_PASSWORD}
+                        if errorlevel 1 (
+                            echo ERROR: Service verification failed with exit code %errorlevel%
+                            exit /b 1
+                        )
                         echo DEBUG: Service verification completed
                         
                     """
