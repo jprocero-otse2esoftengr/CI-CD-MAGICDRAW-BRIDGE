@@ -63,7 +63,7 @@ pipeline {
                 dir('regressiontest') {
                     bat """
                         echo Listing available test suites...
-                        java -jar ${REGTEST} -project . -list
+                        java -jar ../jarfiles/RegTestRunner-8.10.5.jar -project .. -list
                         echo.
                         echo Checking project structure...
                         dir /s testsuite
@@ -84,11 +84,11 @@ pipeline {
                 dir('.') {
                     bat """
                         echo Starting regression tests...
-                        echo Using RegTest jar: ${params.REGTEST}
+                        echo Using RegTest jar: jarfiles/RegTestRunner-8.10.5.jar
                         
                         echo Checking if regtest jar exists...
-                        if not exist "${params.REGTEST}" (
-                            echo ERROR: RegTest jar not found at ${params.REGTEST}
+                        if not exist "jarfiles\\RegTestRunner-8.10.5.jar" (
+                            echo ERROR: RegTest jar not found at jarfiles/RegTestRunner-8.10.5.jar
                             exit /b 1
                         )
                         
@@ -110,12 +110,12 @@ pipeline {
                         
                         echo.
                         echo Checking available test suites...
-                        java -jar "${params.REGTEST}" -project . -host ${params.BRIDGE_HOST} -port ${params.BRIDGE_PORT} -username ${params.BRIDGE_USER} -password ${params.BRIDGE_PASSWORD} -list
+                        java -jar jarfiles/RegTestRunner-8.10.5.jar -project . -host ${params.BRIDGE_HOST} -port ${params.BRIDGE_PORT} -username ${params.BRIDGE_USER} -password ${params.BRIDGE_PASSWORD} -list
                         
                         echo.
                         echo Running all available regression tests...
-                        echo Command: java -jar "${params.REGTEST}" -project . -host ${params.BRIDGE_HOST} -port ${params.BRIDGE_PORT} -username ${params.BRIDGE_USER} -password ${params.BRIDGE_PASSWORD} -logfile regressiontest/result.xml
-                        java -jar "${params.REGTEST}" -project . -host ${params.BRIDGE_HOST} -port ${params.BRIDGE_PORT} -username ${params.BRIDGE_USER} -password ${params.BRIDGE_PASSWORD} -logfile regressiontest/result.xml
+                        echo Command: java -jar jarfiles/RegTestRunner-8.10.5.jar -project . -host ${params.BRIDGE_HOST} -port ${params.BRIDGE_PORT} -username ${params.BRIDGE_USER} -password ${params.BRIDGE_PASSWORD} -logfile regressiontest/result.xml
+                        java -jar jarfiles/RegTestRunner-8.10.5.jar -project . -host ${params.BRIDGE_HOST} -port ${params.BRIDGE_PORT} -username ${params.BRIDGE_USER} -password ${params.BRIDGE_PASSWORD} -logfile regressiontest/result.xml
                         
                         echo.
                         echo Checking if result.xml was created...
