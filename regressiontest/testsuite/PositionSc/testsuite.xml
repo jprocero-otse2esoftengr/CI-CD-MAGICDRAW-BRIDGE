@@ -18,7 +18,7 @@
          <option name="key.option.test.name" value="positioncheck"/>
          <option name="run.testcase.test.operation"
                  value="BuilderUMLService.NameOfPortType1.operation1"/>
-         <option name="run.testcase.test.host" value="localhost:11165"/>
+         <option name="run.testcase.test.host" value="ec2-52-74-183-0.ap-southeast-1.compute.amazonaws.com:11165"/>
       </options>
       <compare>
          <testcaseCompare compareType="equal" name="Compare run of positioncheck">
@@ -43,7 +43,7 @@
          <option name="key.option.test.name" value="positioncheck2"/>
          <option name="run.testcase.test.operation"
                  value="BuilderUMLService.NameOfPortType1.operation1"/>
-         <option name="run.testcase.test.host" value="localhost:11165"/>
+         <option name="run.testcase.test.host" value="ec2-52-74-183-0.ap-southeast-1.compute.amazonaws.com:11165"/>
       </options>
       <compare>
          <testcaseCompare compareType="equal" name="Compare run of positioncheck2">
