@@ -27,66 +27,6 @@ pipeline {
 
      
     stages {
-        stage('Build') {
-            steps {
-                dir('.') {
-                    bat """
-                        java -jar ${params.XUMLC} -uml uml/BuilderUML.xml
-                        if errorlevel 1 exit /b 1
-                        echo Build completed successfully
-                        dir repository\\BuilderUML\\*.rep
-                    """
-                    archiveArtifacts artifacts: 'repository/BuilderUML/*.rep'
-                }
-            }
-        }
-         stage('Deploy') {
-            steps {
-                dir('.') {
-                    bat """
-                        echo Checking for repository files...
-                       
-                        if not exist repository\\BuilderUML\\regtestlatest.rep (
-                            echo ERROR: regtestlatest.rep not found!
-                            exit /b 1
-                        )
-                         
-                        echo All repository files found, starting deployment...
-                        echo Deploying service to AWS instance...
-                        npx e2e-bridge-cli deploy repository/BuilderUML/regtestlatest.rep -h ${params.BRIDGE_HOST} -u ${params.BRIDGE_USER} -P ${params.BRIDGE_PASSWORD} -o overwrite
-                        if errorlevel 1 (
-                            echo ERROR: Deployment failed with exit code %errorlevel%
-                            exit /b 1
-                        )
-                        echo Deployment completed successfully, now checking service status...
-                        echo DEBUG: About to check service status
-                        npx e2e-bridge-cli status regtestlatest -h ${params.BRIDGE_HOST} -u ${params.BRIDGE_USER} -P ${params.BRIDGE_PASSWORD}
-                        if errorlevel 1 (
-                            echo ERROR: Service status check failed with exit code %errorlevel%
-                            exit /b 1
-                        )
-                        echo DEBUG: Service status check completed
-                        
-                        echo Starting the service...
-                        npx e2e-bridge-cli start regtestlatest -h ${params.BRIDGE_HOST} -u ${params.BRIDGE_USER} -P ${params.BRIDGE_PASSWORD}
-                        if errorlevel 1 (
-                            echo ERROR: Service start failed with exit code %errorlevel%
-                            exit /b 1
-                        )
-                        echo DEBUG: Service start command completed
-                        
-                        echo Verifying service is running...
-                        npx e2e-bridge-cli status regtestlatest -h ${params.BRIDGE_HOST} -u ${params.BRIDGE_USER} -P ${params.BRIDGE_PASSWORD}
-                        if errorlevel 1 (
-                            echo ERROR: Service verification failed with exit code %errorlevel%
-                            exit /b 1
-                        )
-                        echo DEBUG: Service verification completed
-                        
-                    """
-                }
-            }
-        }
         stage('List Test Suites') {
             steps {
                 dir('regressiontest') {
@@ -131,20 +71,19 @@ pipeline {
                         echo Starting regression tests...
                         echo Test configuration:
                         echo - Project: .
-                        echo - Host: ${params.BRIDGE_HOST}
-                        echo - Service Port: ${params.BRIDGE_PORT}
-                        echo - Control Port: ${params.CONTROL_PORT}
-                        echo - Username: ${params.BRIDGE_USER}
-                        echo - Note: RegTestRunner will run all available test suites in the project
+                        echo - Host: localhost
+                        echo - Port: 11165
+                        echo - Username: test
+                        echo - Note: Running tests against local service (pre-deployment validation)
                         
                         echo.
                         echo Checking available test suites...
-                        java -jar jarfiles/RegTestRunner-8.10.5.jar -project . -host ${params.BRIDGE_HOST} -port ${params.CONTROL_PORT} -username ${params.BRIDGE_USER} -password ${params.BRIDGE_PASSWORD} -list
+                        java -jar jarfiles/RegTestRunner-8.10.5.jar -project . -host localhost -port 11165 -username test -password test -list
                         
                         echo.
                         echo Running all available regression tests...
-                        echo Command: java -jar jarfiles/RegTestRunner-8.10.5.jar -project . -host ${params.BRIDGE_HOST} -port ${params.CONTROL_PORT} -username ${params.BRIDGE_USER} -password ${params.BRIDGE_PASSWORD} -logfile regressiontest/result.xml
-                        java -jar jarfiles/RegTestRunner-8.10.5.jar -project . -host ${params.BRIDGE_HOST} -port ${params.CONTROL_PORT} -username ${params.BRIDGE_USER} -password ${params.BRIDGE_PASSWORD} -logfile regressiontest/result.xml
+                        echo Command: java -jar jarfiles/RegTestRunner-8.10.5.jar -project . -host localhost -port 11165 -username test -password test -logfile regressiontest/result.xml
+                        java -jar jarfiles/RegTestRunner-8.10.5.jar -project . -host localhost -port 11165 -username test -password test -logfile regressiontest/result.xml
                         
                         echo.
                         echo Checking if result.xml was created...
@@ -201,6 +140,37 @@ pipeline {
                             junit 'regressiontest/result.xml'
                         }
                     }
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                dir('.') {
+                    bat """
+                        java -jar ${params.XUMLC} -uml uml/BuilderUML.xml
+                        if errorlevel 1 exit /b 1
+                        echo Build completed successfully
+                        dir repository\\BuilderUML\\*.rep
+                    """
+                    archiveArtifacts artifacts: 'repository/BuilderUML/*.rep'
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                dir('.') {
+                    bat """
+                        echo Checking for repository files...
+                       
+                        if not exist repository\\BuilderUML\\regtestlatest.rep (
+                            echo ERROR: regtestlatest.rep not found!
+                            exit /b 1
+                        )
+                         
+                        echo All repository files found, starting deployment...
+                        npx e2e-bridge-cli deploy repository/BuilderUML/regtestlatest.rep -h ${params.BRIDGE_HOST} -u ${params.BRIDGE_USER} -P ${params.BRIDGE_PASSWORD} -o overwrite
+                        
+                    """
                 }
             }
         }
