@@ -103,19 +103,19 @@ pipeline {
                         echo Test configuration:
                         echo - Project: .
                         echo - Host: ${params.BRIDGE_HOST}
-                        echo - Port: ${params.BRIDGE_PORT}
+                        echo - Service Port: ${params.BRIDGE_PORT}
                         echo - Control Port: ${params.CONTROL_PORT}
                         echo - Username: ${params.BRIDGE_USER}
                         echo - Note: RegTestRunner will run all available test suites in the project
                         
                         echo.
                         echo Checking available test suites...
-                        java -jar jarfiles/RegTestRunner-8.10.5.jar -project . -host ${params.BRIDGE_HOST} -port ${params.BRIDGE_PORT} -username ${params.BRIDGE_USER} -password ${params.BRIDGE_PASSWORD} -list
+                        java -jar jarfiles/RegTestRunner-8.10.5.jar -project . -host ${params.BRIDGE_HOST} -port ${params.CONTROL_PORT} -username ${params.BRIDGE_USER} -password ${params.BRIDGE_PASSWORD} -list
                         
                         echo.
                         echo Running all available regression tests...
-                        echo Command: java -jar jarfiles/RegTestRunner-8.10.5.jar -project . -host ${params.BRIDGE_HOST} -port ${params.BRIDGE_PORT} -username ${params.BRIDGE_USER} -password ${params.BRIDGE_PASSWORD} -logfile regressiontest/result.xml
-                        java -jar jarfiles/RegTestRunner-8.10.5.jar -project . -host ${params.BRIDGE_HOST} -port ${params.BRIDGE_PORT} -username ${params.BRIDGE_USER} -password ${params.BRIDGE_PASSWORD} -logfile regressiontest/result.xml
+                        echo Command: java -jar jarfiles/RegTestRunner-8.10.5.jar -project . -host ${params.BRIDGE_HOST} -port ${params.CONTROL_PORT} -username ${params.BRIDGE_USER} -password ${params.BRIDGE_PASSWORD} -logfile regressiontest/result.xml
+                        java -jar jarfiles/RegTestRunner-8.10.5.jar -project . -host ${params.BRIDGE_HOST} -port ${params.CONTROL_PORT} -username ${params.BRIDGE_USER} -password ${params.BRIDGE_PASSWORD} -logfile regressiontest/result.xml
                         
                         echo.
                         echo Checking if result.xml was created...
